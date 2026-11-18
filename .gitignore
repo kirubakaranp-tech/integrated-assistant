@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local settings
+.env
+
+# Runtime data (Chroma vector store)
+data/
+
+# Tooling
+.pytest_cache/
+.idea/
+.vscode/
