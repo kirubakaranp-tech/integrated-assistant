@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+python-multipart
+chromadb>=1.0,<2
+pymupdf
+python-docx
+openai
+python-dotenv
+
+# for the tests
+pytest
+httpx
