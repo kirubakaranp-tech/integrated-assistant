@@ -61,13 +61,13 @@ def test_sessions_are_separate(client, fake_llm):
     ask(client, "How many days of earned leave?", session_id="ravi")
 
     roles = [m["role"] for m in fake_llm.calls[1]]
-    assert roles == ["system", "user"]  # ravi's chat has no history from anna's
+    assert roles == ["system", "user"]
 
 
 def test_only_the_last_5_messages_are_kept(client, fake_llm):
     upload_policy(client)
 
-    for i in range(4):  # 4 questions + 4 answers = 8 messages
+    for i in range(4):
         ask(client, f"Question {i} about leave")
 
     history = memory.get_history("s1")
@@ -81,7 +81,6 @@ def test_i_dont_know_when_there_are_no_documents(client, fake_llm):
 
     assert response.json()["answer"] == "I don't know"
     assert response.json()["sources"] == []
-    assert fake_llm.calls == []  # the model was not even asked
 
 
 def test_i_dont_know_when_nothing_relevant_is_found(client, fake_llm):
@@ -89,8 +88,8 @@ def test_i_dont_know_when_nothing_relevant_is_found(client, fake_llm):
 
     response = ask(client, "What is the capital of France?")
 
-    assert response.json() == {"answer": "I don't know", "sources": [], "session_id": "s1"}
-    assert fake_llm.calls == []
+    assert response.json()["answer"] == "I don't know"
+    assert response.json()["sources"] == []
 
 
 def test_i_dont_know_from_the_model_has_no_sources(client, fake_llm):
@@ -122,3 +121,48 @@ def test_llm_error_returns_503(client, monkeypatch):
     monkeypatch.setattr("app.api.chat.ask_llm", llm_down)
     response = ask(client, "How many days of sick leave do employees get?")
     assert response.status_code == 503
+
+
+def test_customer_question_uses_the_crm_tool(client, fake_llm):
+    upload_policy(client)
+    fake_llm.answer = "Customer 3 (Rahul) is on the Standard plan."
+    fake_llm.tools_used = ["get_customer_details(3)"]
+
+    response = ask(client, "Which plan is customer 3 on?")
+
+    assert response.json() == {
+        "answer": "Customer 3 (Rahul) is on the Standard plan.",
+        "sources": [{"file": "CRM", "page": None}],
+        "tools_used": ["get_customer_details(3)"],
+        "session_id": "s1",
+    }
+
+
+def test_customer_question_works_without_documents(client, fake_llm):
+    fake_llm.answer = "Customer 3 (Rahul) is on the Standard plan."
+    fake_llm.tools_used = ["get_customer_details(3)"]
+
+    response = ask(client, "Which plan is customer 3 on?")
+
+    assert response.json()["answer"] == "Customer 3 (Rahul) is on the Standard plan."
+
+
+def test_order_question_uses_the_orders_database(client, fake_llm):
+    fake_llm.answer = "Order 1042 was shipped on 12 March and is out for delivery."
+    fake_llm.tools_used = ["get_order_status(1042)"]
+
+    response = ask(client, "Where is order 1042?")
+
+    assert response.json()["answer"] == "Order 1042 was shipped on 12 March and is out for delivery."
+    assert response.json()["tools_used"] == ["get_order_status(1042)"]
+    assert response.json()["sources"] == [{"file": "Orders database", "page": None}]
+
+
+def test_empty_answer_from_the_model_becomes_i_dont_know(client, fake_llm):
+    upload_policy(client)
+    fake_llm.answer = ""
+
+    response = ask(client, "How many days of sick leave do employees get?")
+
+    assert response.json()["answer"] == "I don't know"
+    assert response.json()["sources"] == []

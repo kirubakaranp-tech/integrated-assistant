@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrated AI Assistant</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Integrated AI Assistant</h1>
+        <div class="header-buttons">
+            <label class="button secondary" for="file-input">Upload document</label>
+            <input type="file" id="file-input" accept=".pdf,.docx" hidden>
+            <button class="secondary" id="new-chat-button">New chat</button>
+        </div>
+    </header>
+
+    <div id="notice" class="notice hidden"></div>
+
+    <main>
+        <section class="chat">
+            <div id="messages" class="messages">
+                <p class="empty">Ask about your documents, a customer (e.g. "Which plan is customer 3 on?")
+                    or an order (e.g. "Where is order 1042?").</p>
+            </div>
+
+            <form id="chat-form" class="chat-form">
+                <textarea id="message-input" rows="2" placeholder="Type your question and press Enter..." required></textarea>
+                <button type="submit" id="send-button">Send</button>
+            </form>
+        </section>
+
+        <aside class="side">
+            <h2>Documents</h2>
+            <ul id="document-list"><li class="muted">No documents yet</li></ul>
+
+            <h2>Email draft</h2>
+            <p class="muted">Turns this chat into a summary email. Nothing is sent.</p>
+            <div class="draft-controls">
+                <select id="tone-select">
+                    <option value="formal">Formal</option>
+                    <option value="friendly">Friendly</option>
+                </select>
+                <button id="draft-button">Draft email</button>
+            </div>
+            <textarea id="draft-output" rows="14" placeholder="The draft will appear here." readonly></textarea>
+            <button class="secondary" id="copy-button" disabled>Copy draft</button>
+        </aside>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
