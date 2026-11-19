@@ -20,7 +20,7 @@ MEMORY_SIZE = 5
 CRM_URL = os.getenv("CRM_URL", "http://127.0.0.1:8001")
 CRM_TIMEOUT = 5
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://assistant_readonly:assistant123@localhost:5432/orders_db")
+DATABASE_URL = os.getenv("DATABASE_URL", "")
 
 ALLOWED_ORIGINS = [
     origin.strip()
