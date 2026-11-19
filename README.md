@@ -111,7 +111,8 @@ Upload `samples/policy.pdf` and `samples/handbook.docx` first (the **Upload docu
 
 Then pick a tone and click **Draft email** to turn the chat into an email.
 
-A 5-minute demo script that shows all of this is in [docs/DEMO.md](docs/DEMO.md).
+**Demo video:** [docs/demo.mp4](docs/demo.mp4) shows all of this in the running app. The demo script is in
+[docs/DEMO.md](docs/DEMO.md).
 
 ## API
 

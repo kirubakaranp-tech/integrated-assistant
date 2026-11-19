@@ -14,4 +14,4 @@ data/
 .pytest_cache/
 .idea/
 .vscode/
-*.mp4
+demo_and_diagram/demo.mp4
