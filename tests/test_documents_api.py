@@ -72,14 +72,24 @@ def test_empty_file_is_rejected(client):
 
 
 def test_too_big_file_is_rejected(client, monkeypatch):
-    monkeypatch.setattr("app.api.documents.MAX_FILE_SIZE_MB", 0.01)  # about 10 KB
-    response = upload(client, "policy.pdf", sample("policy.pdf"))
+    monkeypatch.setattr("app.api.documents.MAX_FILE_SIZE_MB", 1)
+    response = upload(client, "big.pdf", b"%PDF" + b"0" * (1024 * 1024))
     assert response.status_code == 413
+
+
+def test_document_bigger_than_one_chroma_batch(client, monkeypatch):
+    monkeypatch.setattr(vector_store, "MAX_BATCH_SIZE", 2)
+
+    response = upload(client, "policy.pdf", sample("policy.pdf"))
+
+    saved = vector_store.collection.get(where={"doc_id": "d1"})
+    assert response.status_code == 201
+    assert len(saved["ids"]) == response.json()["chunks"] > 2
 
 
 def test_pdf_without_text_is_rejected(client):
     pdf = pymupdf.open()
-    pdf.new_page()  # empty page, like a scanned PDF with no text
+    pdf.new_page()
     response = upload(client, "scan.pdf", pdf.tobytes())
     assert response.status_code == 422
 

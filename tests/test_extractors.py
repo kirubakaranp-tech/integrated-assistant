@@ -10,7 +10,7 @@ def test_read_pdf_gives_one_text_per_page():
 
     assert len(pages) == 3
     assert "Employee Leave and Remote Work Policy" in pages[0]
-    assert "Effective 1 April 2026" in pages[0]  # "ff" is a ligature in this PDF
+    assert "Effective 1 April 2026" in pages[0]
 
 
 def test_read_docx_with_table():

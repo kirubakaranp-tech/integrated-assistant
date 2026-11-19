@@ -6,6 +6,8 @@ pymupdf
 python-docx
 openai
 python-dotenv
+requests
+psycopg[binary]
 
 # for the tests
 pytest
